@@ -1,5 +1,8 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'CUSTOMER');
+CREATE TYPE "Role" AS ENUM ('admin', 'customer');
+
+-- CreateEnum
+CREATE TYPE "statusEnum" AS ENUM ('pending', 'shipped', 'delivered');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -51,7 +54,7 @@ CREATE TABLE "ReviewAndRating" (
 CREATE TABLE "Order" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'pending',
+    "status" "statusEnum" NOT NULL DEFAULT 'pending',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
