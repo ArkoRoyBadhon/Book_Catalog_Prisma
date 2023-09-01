@@ -11,5 +11,16 @@ router.post(
   categoryController.insertIntoDB,
 )
 router.get('/', categoryController.getAllcategories)
+router.get('/:id', categoryController.getSingleCategoryById)
+router.patch(
+  '/:id',
+  authPermission(ENUM_USER_ROLE.ADMIN),
+  categoryController.updateSingleCategoryById,
+)
+router.delete(
+  '/:id',
+  authPermission(ENUM_USER_ROLE.ADMIN),
+  categoryController.deleteCategoryById,
+)
 
 export const categoryRoutes = router
