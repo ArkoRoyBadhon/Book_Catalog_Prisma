@@ -11,12 +11,52 @@ datasource db {
 }
 
 model User {
-  id         String @id @default(uuid())
-  name       String
-  email      String @unique
-  password   String
-  role       String
-  contactNo  String
-  address    String
-  profileImg String
+  id               String            @id @default(uuid())
+  name             String
+  email            String            @unique
+  password         String
+  role             String
+  contactNo        String
+  address          String
+  profileImg       String
+  reviewAndRatings ReviewAndRating[]
+
+  @@map("users")
+}
+
+model Category {
+  id    String @id @default(uuid())
+  title String
+  books Book[]
+
+  @@map("categories")
+}
+
+model Book {
+  id              String   @id @default(uuid())
+  title           String
+  author          String
+  price           Float
+  genre           String
+  publicationDate DateTime @default(now())
+
+  category         Category          @relation(fields: [categoryId], references: [id])
+  categoryId       String
+  reviewAndRatings ReviewAndRating[]
+}
+
+model ReviewAndRating {
+  id     String @id @default(uuid())
+  review String
+  rating String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  book   Book   @relation(fields: [bookId], references: [id])
+  bookId String
+}
+
+model Order {
+  id String @id @default(uuid())
 }

@@ -9,7 +9,7 @@ const globalErrorHandler: ErrorRequestHandler = (
   error,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   config.env === 'developement'
     ? console.log('globalErrorHandler ~', error)
