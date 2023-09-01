@@ -13,6 +13,13 @@ const insertIntoDB = async (data: Category): Promise<Category> => {
   return result
 }
 
+const getAllcategories = async (): Promise<Category[]> => {
+  const result = await prisma.category.findMany({ include: { books: true } })
+
+  return result
+}
+
 export const categoryService = {
   insertIntoDB,
+  getAllcategories,
 }

@@ -14,7 +14,18 @@ const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+const getAllcategories = catchAsync(async (req: Request, res: Response) => {
+  const result = await categoryService.getAllcategories()
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Category fetched successfully!',
+    data: result,
+  })
+})
 
 export const categoryController = {
   insertIntoDB,
+  getAllcategories,
 }
