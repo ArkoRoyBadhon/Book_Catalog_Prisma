@@ -1,5 +1,20 @@
-export const booksFilterableFields: string[] = ['searchTerm', 'title', 'author']
+export const booksFilterableFields: string[] = [
+  'search',
+  'category',
+  'minPrice',
+  'maxPrice',
+]
 
-export const booksSearchableFields: string[] = ['title', 'author', 'genre']
+export const booksSearchableFields: string[] = [
+  'title',
+  'categoryId',
+  'author',
+  'genre',
+]
 
-export const bookRelationalfields: string[] = ['']
+export const booksSearchablePriceFields: string[] = ['price']
+
+export const booksRrelationalfields: string[] = ['categoryId']
+export const booksRelationalFieldsMapper: { [key: string]: string } = {
+  categoryId: 'category',
+}

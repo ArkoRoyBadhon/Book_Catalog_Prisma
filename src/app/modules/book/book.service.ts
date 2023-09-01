@@ -5,7 +5,10 @@ import { IBookFilterRequest } from './book.interface'
 import { IPaginationOptions } from '../../../interfaces/pagination'
 import { IGenericResponse } from '../../../interfaces/common'
 import { paginationsHelpers } from '../../../helpers/paginationHelpers'
-import { booksSearchableFields } from './book.constants'
+import {
+  booksRelationalFieldsMapper,
+  booksSearchableFields,
+} from './book.constants'
 
 const insertIntoDB = async (payload: Book): Promise<Book> => {
   const data = new Date(payload?.publicationDate)
@@ -20,41 +23,67 @@ const insertIntoDB = async (payload: Book): Promise<Book> => {
   return result
 }
 
-// const getAllBooks = async (): Promise<Book[]> => {
-//   const result = await prisma.book.findMany({
-//     include: { category: true },
-//   })
-
-//   return result
-// }
-
 const getAllBooks = async (
   filters: IBookFilterRequest,
   options: IPaginationOptions,
 ): Promise<IGenericResponse<Book[]>> => {
   const { size, page, skip } = paginationsHelpers.calculatePagination(options)
-  const { searchTerm, ...filterData } = filters
+  const { search, category, minPrice, maxPrice, ...filterData } = filters
 
   const andConditions = []
 
-  if (searchTerm) {
+  if (search) {
     andConditions.push({
       OR: booksSearchableFields.map(field => ({
         [field]: {
-          contains: searchTerm,
-          mode: 'insentitive',
+          contains: search,
+          mode: 'insensitive',
         },
       })),
+    })
+  }
+
+  if (category) {
+    andConditions.push({
+      OR: booksSearchableFields.map(field => ({
+        [field]: {
+          contains: category,
+          mode: 'insensitive',
+        },
+      })),
+    })
+  }
+
+  if (minPrice !== undefined) {
+    andConditions.push({
+      price: {
+        gte: parseFloat(minPrice),
+      },
+    })
+  }
+  if (maxPrice !== undefined) {
+    andConditions.push({
+      price: {
+        lte: parseFloat(maxPrice),
+      },
     })
   }
 
   if (Object.keys(filterData).length > 0) {
     andConditions.push({
       AND: Object.keys(filterData).map(key => {
-        return {
-          [key]: {
-            equals: (filterData as any)[key],
-          },
+        if (booksSearchableFields.includes(key)) {
+          return {
+            [booksRelationalFieldsMapper[key]]: {
+              id: (filterData as any)[key],
+            },
+          }
+        } else {
+          return {
+            [key]: {
+              equals: (filterData as any)[key],
+            },
+          }
         }
       }),
     })

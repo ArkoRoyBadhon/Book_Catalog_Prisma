@@ -4,7 +4,7 @@ import { bookService } from './book.service'
 import catchAsync from '../../../shared/catchAsync'
 import { Request, Response } from 'express'
 import pick from '../../../shared/pick'
-import { booksSearchableFields } from './book.constants'
+import { booksFilterableFields } from './book.constants'
 
 const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
   const result = await bookService.insertIntoDB(req.body)
@@ -18,14 +18,16 @@ const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getAllBooks = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, booksSearchableFields)
-  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder'])
+  const filters = pick(req.query, booksFilterableFields)
+  const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder'])
+  console.log('Option', filters)
+
   const result = await bookService.getAllBooks(filters, options)
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Book created successfully!',
+    message: 'Books fetched successfully!',
     meta: result.meta,
     data: result.data,
   })
