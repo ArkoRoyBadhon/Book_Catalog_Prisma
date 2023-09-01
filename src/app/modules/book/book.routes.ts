@@ -11,5 +11,6 @@ router.post(
   bookController.insertIntoDB,
 )
 router.get('/', bookController.getAllBooks)
+router.get('/:categoryId/category', bookController.getBookBuCategoryId)
 
 export const bookRoutes = router

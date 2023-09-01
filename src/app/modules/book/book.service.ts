@@ -126,7 +126,40 @@ const getAllBooks = async (
   }
 }
 
+const getBookBuCategoryId = async (
+  id: string,
+  options: IPaginationOptions,
+): Promise<IGenericResponse<Book[] | null>> => {
+  const { size, page } = paginationsHelpers.calculatePagination(options)
+
+  const result = await prisma.category.findMany({
+    where: {
+      id: id,
+    },
+    select: {
+      books: true,
+    },
+  })
+
+  const total = result[0].books.length
+
+  const totalPage = Math.ceil(total / size)
+
+  const finalResult = {
+    meta: {
+      total,
+      page,
+      size,
+      totalPage,
+    },
+    data: Array.isArray(result) ? result[0].books : result,
+  }
+
+  return finalResult
+}
+
 export const bookService = {
   insertIntoDB,
   getAllBooks,
+  getBookBuCategoryId,
 }

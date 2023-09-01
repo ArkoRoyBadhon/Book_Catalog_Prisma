@@ -20,7 +20,7 @@ const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
 const getAllBooks = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, booksFilterableFields)
   const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder'])
-  console.log('Option', filters)
+  // console.log('Option', filters)
 
   const result = await bookService.getAllBooks(filters, options)
 
@@ -33,7 +33,24 @@ const getAllBooks = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const getBookBuCategoryId = catchAsync(async (req: Request, res: Response) => {
+  const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder'])
+  const result = await bookService.getBookBuCategoryId(
+    req.params.categoryId,
+    options,
+  )
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Books with associated category data fetched successfully',
+    meta: result.meta,
+    data: result.data,
+  })
+})
+
 export const bookController = {
   insertIntoDB,
   getAllBooks,
+  getBookBuCategoryId,
 }
