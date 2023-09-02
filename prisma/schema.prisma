@@ -20,7 +20,7 @@ model User {
   address          String
   profileImg       String
   reviewAndRatings ReviewAndRating[]
-  Order            Order[]
+  order            Order[]
 
   @@map("users")
 }
@@ -49,6 +49,8 @@ model Book {
   category         Category          @relation(fields: [categoryId], references: [id])
   categoryId       String
   reviewAndRatings ReviewAndRating[]
+
+  @@map("books")
 }
 
 model ReviewAndRating {
@@ -61,6 +63,8 @@ model ReviewAndRating {
 
   book   Book   @relation(fields: [bookId], references: [id])
   bookId String
+
+  @@map("reviewAndRatings")
 }
 
 model Order {
@@ -70,8 +74,10 @@ model Order {
   userId String
 
   orderedBooks Json
-  status    statusEnum @default(pending)
-  createdAt DateTime   @default(now())
+  status       statusEnum @default(pending)
+  createdAt    DateTime   @default(now())
+
+  @@map("orders")
 }
 
 enum statusEnum {

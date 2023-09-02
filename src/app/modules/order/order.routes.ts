@@ -17,4 +17,10 @@ router.get(
   orderController.getAllorders,
 )
 
+router.get(
+  '/:orderId',
+  authPermission(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.CUSTOMER),
+  orderController.getOrdersByid,
+)
+
 export const orderRoutes = router

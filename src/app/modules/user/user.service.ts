@@ -93,73 +93,6 @@ const getAllUsers = async (): Promise<Partial<User>[]> => {
 
   return result
 }
-// const getAllUsers = async (
-//   filters: IUserFilterRequest,
-//   options: IPaginationOptions,
-// ): Promise<IGenericResponse<User[]>> => {
-//   const { size, page, skip } = paginationsHelpers.calculatePagination(options)
-//   const { searchTerm, ...filterData } = filters
-
-//   const andConditions = []
-
-//   if (searchTerm) {
-//     andConditions.push({
-//       OR: userSearchableFields.map(field => ({
-//         [field]: {
-//           contains: searchTerm,
-//           mode: 'insentitive',
-//         },
-//       })),
-//     })
-//   }
-
-//   if (Object.keys(filterData).length > 0) {
-//     andConditions.push({
-//       AND: Object.keys(filterData).map(key => {
-//         return {
-//           [key]: {
-//             equals: (filterData as any)[key],
-//           },
-//         }
-//       }),
-//     })
-//   }
-
-//   const whereConditions: Prisma.UserWhereInput =
-//     andConditions.length > 0 ? { AND: andConditions } : {}
-
-//   const result = await prisma.user.findMany({
-//     include: {
-//       reviewAndRatings: true,
-//     },
-//     where: whereConditions,
-//     skip,
-//     take: size,
-//     orderBy:
-//       options.sortBy && options.sortOrder
-//         ? {
-//             [options.sortBy]: options.sortOrder,
-//           }
-//         : {
-//             name: 'asc',
-//           },
-//   })
-
-//   const total = await prisma.user.count({
-//     where: whereConditions,
-//   })
-
-//   console.log(typeof total)
-
-//   return {
-//     meta: {
-//       total,
-//       page,
-//       size,
-//     },
-//     data: result,
-//   }
-// }
 
 const getSingleUserById = async (id: string): Promise<User | null> => {
   const result = await prisma.user.findUnique({
@@ -168,6 +101,7 @@ const getSingleUserById = async (id: string): Promise<User | null> => {
     },
     include: {
       reviewAndRatings: true,
+      order: true,
     },
   })
 

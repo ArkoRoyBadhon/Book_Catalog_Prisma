@@ -17,7 +17,7 @@ const insertIntoDB = async (payload: Book): Promise<Book> => {
 
   const result = await prisma.book.create({
     data: payload,
-    include: { category: true },
+    // include: { category: true },
   })
 
   return result

@@ -31,7 +31,21 @@ const getAllorders = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const getOrdersByid = catchAsync(async (req: Request, res: Response) => {
+  const token = req.headers.authorization || req.headers.Authorization
+  const id = req.params.orderId
+  const result = await orderService.getOrdersByid(token, id)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Order fetched successfully!',
+    data: result,
+  })
+})
+
 export const orderController = {
   insertIntoDB,
   getAllorders,
+  getOrdersByid,
 }
