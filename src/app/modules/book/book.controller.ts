@@ -49,8 +49,46 @@ const getBookBuCategoryId = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const getSingleBookById = catchAsync(async (req: Request, res: Response) => {
+  const result = await bookService.getSingleBookById(req.params.id)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Book fetced successfully!',
+    data: result,
+  })
+})
+
+const updateSingleBookById = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id
+  const payload = req.body
+  const result = await bookService.updateSingleBookById(id, payload)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Book updated successfully!',
+    data: result,
+  })
+})
+
+const deleteSingleBookById = catchAsync(async (req: Request, res: Response) => {
+  const result = await bookService.deleteSingleBookById(req.params.id)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Book deleted successfully!',
+    data: result,
+  })
+})
+
 export const bookController = {
   insertIntoDB,
   getAllBooks,
   getBookBuCategoryId,
+  getSingleBookById,
+  updateSingleBookById,
+  deleteSingleBookById,
 }

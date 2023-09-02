@@ -158,8 +158,45 @@ const getBookBuCategoryId = async (
   return finalResult
 }
 
+const getSingleBookById = async (id: string): Promise<Book | null> => {
+  const result = await prisma.book.findUnique({
+    where: {
+      id,
+    },
+  })
+
+  return result
+}
+
+const updateSingleBookById = async (
+  id: string,
+  payload: Partial<Book>,
+): Promise<Book | null> => {
+  const result = await prisma.book.update({
+    where: {
+      id,
+    },
+    data: payload,
+  })
+
+  return result
+}
+
+const deleteSingleBookById = async (id: string): Promise<Book | null> => {
+  const result = await prisma.book.delete({
+    where: {
+      id,
+    },
+  })
+
+  return result
+}
+
 export const bookService = {
   insertIntoDB,
   getAllBooks,
   getBookBuCategoryId,
+  getSingleBookById,
+  updateSingleBookById,
+  deleteSingleBookById,
 }

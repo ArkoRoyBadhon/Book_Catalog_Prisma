@@ -12,5 +12,16 @@ router.post(
 )
 router.get('/', bookController.getAllBooks)
 router.get('/:categoryId/category', bookController.getBookBuCategoryId)
+router.get('/:id', bookController.getSingleBookById)
+router.patch(
+  '/:id',
+  authPermission(ENUM_USER_ROLE.ADMIN),
+  bookController.updateSingleBookById,
+)
+router.delete(
+  '/:id',
+  authPermission(ENUM_USER_ROLE.ADMIN),
+  bookController.deleteSingleBookById,
+)
 
 export const bookRoutes = router
