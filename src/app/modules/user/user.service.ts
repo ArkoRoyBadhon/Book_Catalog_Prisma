@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { User, Prisma } from '@prisma/client'
+import { User } from '@prisma/client'
 import prisma from '../../../shared/prisma'
-import { IUserFilterRequest } from './user.interface'
-import { IPaginationOptions } from '../../../interfaces/pagination'
-import { IGenericResponse } from '../../../interfaces/common'
-import { paginationsHelpers } from '../../../helpers/paginationHelpers'
-import { userSearchableFields } from './user.constants'
+// import { IUserFilterRequest } from './user.interface'
+// import { IPaginationOptions } from '../../../interfaces/pagination'
+// import { IGenericResponse } from '../../../interfaces/common'
+// import { paginationsHelpers } from '../../../helpers/paginationHelpers'
+// import { userSearchableFields } from './user.constants'
 import { ILoginAllUser, ILoginAllUserResponse } from '../../../interfaces/auth'
 import config from '../../../config'
 import { Secret } from 'jsonwebtoken'
@@ -14,11 +14,17 @@ import httpStatus from 'http-status'
 import { jwtHelpers } from '../../../helpers/jwtHelpers'
 import bcrypt from 'bcrypt'
 
-const insertIntoDB = async (data: User): Promise<User> => {
+const insertIntoDB = async (data: User): Promise<Partial<User>> => {
   const result = await prisma.user.create({
     data,
-    include: {
-      reviewAndRatings: true,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      contactNo: true,
+      address: true,
+      profileImg: true,
     },
   })
 
@@ -41,8 +47,8 @@ const loginUser = async (
   }
   console.log('Password', password)
   console.log('database Password', isUserExist?.password)
-  const dd = await bcrypt.compare(password, isUserExist?.password)
-  console.log('DD', dd)
+  // const dd = await bcrypt.compare(password, isUserExist?.password)
+  // console.log('DD', dd)
 
   if (
     isUserExist.password &&
@@ -52,16 +58,16 @@ const loginUser = async (
   }
 
   // create access token & refresh token
-  const { id: Id, role } = isUserExist
+  const { id: userId, role } = isUserExist
 
   const accessToken = jwtHelpers.createToken(
-    { Id, role },
+    { userId, role },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string,
   )
 
   const refreshToken = jwtHelpers.createToken(
-    { Id, role },
+    { userId, role },
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string,
   )
@@ -72,73 +78,88 @@ const loginUser = async (
   }
 }
 
-const getAllUsers = async (
-  filters: IUserFilterRequest,
-  options: IPaginationOptions,
-): Promise<IGenericResponse<User[]>> => {
-  const { limit, page, skip } = paginationsHelpers.calculatePagination(options)
-  const { searchTerm, ...filterData } = filters
-
-  const andConditions = []
-
-  if (searchTerm) {
-    andConditions.push({
-      OR: userSearchableFields.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insentitive',
-        },
-      })),
-    })
-  }
-
-  if (Object.keys(filterData).length > 0) {
-    andConditions.push({
-      AND: Object.keys(filterData).map(key => {
-        return {
-          [key]: {
-            equals: (filterData as any)[key],
-          },
-        }
-      }),
-    })
-  }
-
-  const whereConditions: Prisma.UserWhereInput =
-    andConditions.length > 0 ? { AND: andConditions } : {}
-
+const getAllUsers = async (): Promise<Partial<User>[]> => {
   const result = await prisma.user.findMany({
-    include: {
-      reviewAndRatings: true,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      contactNo: true,
+      address: true,
+      profileImg: true,
     },
-    where: whereConditions,
-    skip,
-    take: limit,
-    orderBy:
-      options.sortBy && options.sortOrder
-        ? {
-            [options.sortBy]: options.sortOrder,
-          }
-        : {
-            name: 'asc',
-          },
   })
 
-  const total = await prisma.user.count({
-    where: whereConditions,
-  })
-
-  console.log(typeof total)
-
-  return {
-    meta: {
-      total,
-      page,
-      limit,
-    },
-    data: result,
-  }
+  return result
 }
+// const getAllUsers = async (
+//   filters: IUserFilterRequest,
+//   options: IPaginationOptions,
+// ): Promise<IGenericResponse<User[]>> => {
+//   const { size, page, skip } = paginationsHelpers.calculatePagination(options)
+//   const { searchTerm, ...filterData } = filters
+
+//   const andConditions = []
+
+//   if (searchTerm) {
+//     andConditions.push({
+//       OR: userSearchableFields.map(field => ({
+//         [field]: {
+//           contains: searchTerm,
+//           mode: 'insentitive',
+//         },
+//       })),
+//     })
+//   }
+
+//   if (Object.keys(filterData).length > 0) {
+//     andConditions.push({
+//       AND: Object.keys(filterData).map(key => {
+//         return {
+//           [key]: {
+//             equals: (filterData as any)[key],
+//           },
+//         }
+//       }),
+//     })
+//   }
+
+//   const whereConditions: Prisma.UserWhereInput =
+//     andConditions.length > 0 ? { AND: andConditions } : {}
+
+//   const result = await prisma.user.findMany({
+//     include: {
+//       reviewAndRatings: true,
+//     },
+//     where: whereConditions,
+//     skip,
+//     take: size,
+//     orderBy:
+//       options.sortBy && options.sortOrder
+//         ? {
+//             [options.sortBy]: options.sortOrder,
+//           }
+//         : {
+//             name: 'asc',
+//           },
+//   })
+
+//   const total = await prisma.user.count({
+//     where: whereConditions,
+//   })
+
+//   console.log(typeof total)
+
+//   return {
+//     meta: {
+//       total,
+//       page,
+//       size,
+//     },
+//     data: result,
+//   }
+// }
 
 const getSingleUserById = async (id: string): Promise<User | null> => {
   const result = await prisma.user.findUnique({
