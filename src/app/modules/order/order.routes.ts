@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post(
   '/create-order',
-  //   authPermission(ENUM_USER_ROLE.ADMIN),
+  authPermission(ENUM_USER_ROLE.CUSTOMER),
   orderController.insertIntoDB,
 )
 
