@@ -45,8 +45,8 @@ const loginUser = async (
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist')
   }
-  console.log('Password', password)
-  console.log('database Password', isUserExist?.password)
+  // console.log('Password', password)
+  // console.log('database Password', isUserExist?.password)
   // const dd = await bcrypt.compare(password, isUserExist?.password)
   // console.log('DD', dd)
 

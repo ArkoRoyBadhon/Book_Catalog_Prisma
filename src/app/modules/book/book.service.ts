@@ -13,7 +13,7 @@ import {
 const insertIntoDB = async (payload: Book): Promise<Book> => {
   const data = new Date(payload?.publicationDate)
   payload.publicationDate = data
-  console.log('insert Data', payload)
+  // console.log('insert Data', payload)
 
   const result = await prisma.book.create({
     data: payload,
