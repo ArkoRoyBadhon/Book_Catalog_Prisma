@@ -28,4 +28,10 @@ router.delete(
   userController.deleteUserById,
 )
 
+router.get(
+  '/profile',
+  authPermission(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.CUSTOMER),
+  userController.getProfile,
+)
+
 export const userRoutes = router

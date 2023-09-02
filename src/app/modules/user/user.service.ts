@@ -135,6 +135,37 @@ const deleteUserById = async (id: string) => {
   return result
 }
 
+const getProfile = async (token: string | string[] | undefined) => {
+  if (!token) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized')
+  }
+
+  let verifiedUser = null
+
+  if (typeof token === 'string') {
+    verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret)
+  } else {
+    console.error('Token is not a valid string')
+  }
+
+  const result = await prisma.user.findUnique({
+    where: {
+      id: verifiedUser?.userId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      contactNo: true,
+      address: true,
+      profileImg: true,
+    },
+  })
+
+  return result
+}
+
 export const userService = {
   insertIntoDB,
   loginUser,
@@ -142,4 +173,5 @@ export const userService = {
   getSingleUserById,
   updateUserById,
   deleteUserById,
+  getProfile,
 }

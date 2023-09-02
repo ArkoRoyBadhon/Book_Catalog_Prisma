@@ -3,8 +3,6 @@ import catchAsync from '../../../shared/catchAsync'
 import { userService } from './user.service'
 import sendResponse from '../../../shared/sendResponse'
 import httpStatus from 'http-status'
-import pick from '../../../shared/pick'
-import { userSearchableFields } from './user.constants'
 import config from '../../../config'
 import { ILoginAllUserResponse } from '../../../interfaces/auth'
 import bcrypt from 'bcrypt'
@@ -47,9 +45,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, userSearchableFields)
-  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder'])
-  const result = await userService.getAllUsers(filters, options)
+  const result = await userService.getAllUsers()
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -83,6 +79,7 @@ const updateUserById = catchAsync(async (req: Request, res: Response) => {
     data: {},
   })
 })
+
 const deleteUserById = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id
   await userService.deleteUserById(id)
@@ -95,6 +92,18 @@ const deleteUserById = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const getProfile = catchAsync(async (req: Request, res: Response) => {
+  const token = req.headers.authorization || req.headers.Authorization
+  const result = await userService.getProfile(token)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'profile retrieve successfully!',
+    data: result,
+  })
+})
+
 export const userController = {
   insertIntoDB,
   loginUser,
@@ -102,4 +111,5 @@ export const userController = {
   getSingleUserById,
   updateUserById,
   deleteUserById,
+  getProfile,
 }
